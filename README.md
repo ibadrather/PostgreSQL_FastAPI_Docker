@@ -4,12 +4,12 @@ This documentation provides a step-by-step guide on setting up a PostgreSQL data
 
 ### Requirements
 Make sure you have the following dependencies installed on your system:
-    - Docker
-    - Docker Compose
-    - Python 3.9
-    - FastAPI
-    - SQLAlchemy
-    - Alembic
+* Docker
+* Docker Compose
+* Python 3.9
+* FastAPI
+* SQLAlchemy
+* Alembic
 
 
 ### Build Process
@@ -30,7 +30,23 @@ To run the application, execute the following commands:
 docker compose build
 docker compose up
 ```
-This will build the Docker images and start the containers for the PostgreSQL database, pgAdmin, and the FastAPI application.
+
+or simply run the following command:
+```bash
+docker compose up --build
+```
+
+If you want to run the containers in the background in detached mode, you can use the `-d` flag:
+```bash
+docker compose up --build -d
+```
+
+This will build the Docker images and start the containers for the PostgreSQL database, pgAdmin, and the FastAPI application
+
+It should look like this in the Docker Desktop application:
+
+![Containers running](pictures/containers_running.png)
+
 
 ### Database Migrations with Alembic
 
@@ -79,4 +95,18 @@ Ensure that the database container is running, and then execute the following co
     docker compose run app alembic revision --autogenerate -m "initial"
 ```
 
+Finally, execute the following command to apply the migration to the database:
+```bash
+    docker compose run app alembic upgrade head
+```
+
 This command will generate an initial migration script based on the changes detected in the models defined in the `app` directory.
+
+### NOTE:
+This also includes the creation of a FastAPI backend application that will use data schemas for defining data models. These data schemas will serve two main purposes:
+
+1. **Data Validation**: The schemas will verify and validate the data that is sent to various API endpoints. This ensures that the data being received is in the correct format and contains the necessary fields.
+
+2. **Data Serialization**: The schemas will be used for serializing the data that is returned from the API endpoints. This means that the data will be converted into a format that is easier to read or transmit.
+
+The data schemas will be defined within the `app/schemas.py` file. With these schemas, we can ensure that the data being processed is always in the correct format before it's stored within the database. This practice greatly reduces the chances of errors and inconsistencies in the data.
