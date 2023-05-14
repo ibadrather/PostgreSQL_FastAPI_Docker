@@ -3,7 +3,7 @@ services:
   # Service for the database
   database:
     container_name: postgresql_database
-    image: postgres
+    image: postgres:alpine
     restart: always
     ports:
       - 8080:5432
