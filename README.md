@@ -21,7 +21,7 @@ Follow these steps to build the application:
 
 2. Create a `Dockerfile` for the `app` service. This file should include the necessary configurations to build the application image.
 
-3. Create a `requirements.txt `file for the `app` service. This file should list all the Python dependencies required by the FastAPI application.
+3. Create a `requirements.txt` file for the `app` service. This file should list all the Python dependencies required by the FastAPI application.
 
 ### How to Run
 To run the application, execute the following commands:
@@ -110,3 +110,12 @@ This also includes the creation of a FastAPI backend application that will use d
 2. **Data Serialization**: The schemas will be used for serializing the data that is returned from the API endpoints. This means that the data will be converted into a format that is easier to read or transmit.
 
 The data schemas will be defined within the `app/schemas.py` file. With these schemas, we can ensure that the data being processed is always in the correct format before it's stored within the database. This practice greatly reduces the chances of errors and inconsistencies in the data.
+
+### Alternative Method (not recommended)
+
+There is a setup.sh file that can be used to run the application. This file will build the Docker images and start the containers for the PostgreSQL database, pgAdmin, and the FastAPI application. It will also initialize Alembic and perform the database migrations.
+
+To run the application using the `setup.sh` file, execute the following command:
+```bash
+    chmod +x setup.sh && ./setup.sh
+```

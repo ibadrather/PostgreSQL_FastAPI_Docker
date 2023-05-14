@@ -52,13 +52,14 @@ async def add_book(book: BookSchema) -> BookSchema:
     try:
         db.session.add(db_book)
         db.session.commit()
+        response_object = BookSchema(**db_book.to_dict())
     except SQLAlchemyError as e:
         db.session.rollback()
         raise HTTPException(status_code=500, detail="Database error") from e
     finally:
         db.session.close()
 
-    return db_book
+    return response_object
 
 
 @app.post("/add-author", response_model=AuthorSchema)
@@ -76,13 +77,14 @@ async def add_author(author: AuthorSchema) -> AuthorSchema:
     try:
         db.session.add(db_author)
         db.session.commit()
+        response_object = AuthorSchema(**db_author.to_dict())
     except SQLAlchemyError as e:
         db.session.rollback()
         raise HTTPException(status_code=500, detail="Database error") from e
     finally:
         db.session.close()
 
-    return db_author
+    return response_object
 
 
 @app.get("/books", response_model=List[BookSchema])
@@ -95,10 +97,11 @@ async def get_books() -> List[BookSchema]:
     """
     try:
         books = db.session.query(Book).all()
+        response_object = [BookSchema(**book.to_dict()) for book in books]
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail="Database error") from e
 
-    return books
+    return response_object
 
 
 @app.get("/authors", response_model=List[AuthorSchema])
@@ -111,10 +114,65 @@ async def get_authors() -> List[AuthorSchema]:
     """
     try:
         authors = db.session.query(Author).all()
+        response_object = [AuthorSchema(**author.to_dict()) for author in authors]
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail="Database error") from e
 
-    return authors
+    return response_object
+
+
+# delete author
+@app.delete("/delete-author/{author_id}")
+async def delete_author(author_id: int) -> dict:
+    """
+    Endpoint to delete an author from the database.
+
+    Args:
+        author_id (int): The ID of the author to delete.
+
+    Returns:
+        dict: A message indicating the author was deleted.
+    """
+    try:
+        author = db.session.query(Author).get(author_id)
+        if not author:
+            raise HTTPException(status_code=404, detail="Author not found")
+        db.session.delete(author)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise HTTPException(status_code=500, detail="Database error") from e
+    finally:
+        db.session.close()
+
+    return {"message": f"Author {author_id} deleted"}
+
+
+# delete book
+@app.delete("/delete-book/{book_id}")
+async def delete_book(book_id: int) -> dict:
+    """
+    Endpoint to delete a book from the database.
+
+    Args:
+        book_id (int): The ID of the book to delete.
+
+    Returns:
+        dict: A message indicating the book was deleted.
+    """
+    try:
+        book = db.session.query(Book).get(book_id)
+        if not book:
+            raise HTTPException(status_code=404, detail="Book not found")
+        db.session.delete(book)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise HTTPException(status_code=500, detail="Database error") from e
+    finally:
+        db.session.close()
+
+    return {"message": f"Book {book_id} deleted"}
 
 
 if __name__ == "__main__":

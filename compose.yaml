@@ -41,3 +41,15 @@ services:
       [database]
 
     restart: always
+
+  # Service for running tests
+  tests:
+    container_name: tests
+    build: .
+    command: bash -c "pytest"
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://${POSTGRES_DB_USER}:${POSTGRES_DB_PASSWORD}@database:5432/${POSTGRES_DB_NAME}

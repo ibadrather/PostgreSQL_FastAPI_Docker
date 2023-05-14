@@ -1,35 +1,18 @@
-from pydantic import BaseModel, BaseConfig
-from typing import Optional
-
-
-class OrmConfig(BaseConfig):
-    """
-    Config class for Pydantic models.
-    """
-
-    orm_mode = True
+from pydantic import BaseModel
 
 
 class Book(BaseModel):
-    """
-    Book model class.
-    """
-
     title: str
-    rating: Optional[int]
-    author_id: Optional[int]
+    rating: int
+    author_id: int
 
-    class Config(OrmConfig):
-        pass
+    class Config:
+        orm_mode = True
 
 
 class Author(BaseModel):
-    """
-    Author model class.
-    """
-
     name: str
-    age: Optional[int]
+    age: int
 
-    class Config(OrmConfig):
-        pass
+    class Config:
+        orm_mode = True
